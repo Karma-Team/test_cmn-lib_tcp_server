@@ -8,12 +8,12 @@
 
 
 #include <iostream>
-#include <SRV_TcpServer.hpp>
+#include <COM_TcpServer.hpp>
 
 
 
 using namespace std;
-using namespace SRV;
+using namespace COM;
 
 
 
