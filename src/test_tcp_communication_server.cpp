@@ -21,9 +21,14 @@ int main()
 {
 	cout << "Test C++ library for TCP communication : Server" << endl;
 
+	int l_ret;
+
 	CTcpServer l_CTcpServer;
-	l_CTcpServer.initTcpServer();
-	l_CTcpServer.startTcpServer();
+	l_ret = l_CTcpServer.initTcpServer();
+	if(l_ret != -1)
+	{
+		l_CTcpServer.startTcpServer();
+	}
 
     return 0;
 }
