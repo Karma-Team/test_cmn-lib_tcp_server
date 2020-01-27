@@ -1,19 +1,16 @@
 /*
- * test_tcp_communication_server.cpp
- *
- *  Created on: 13 janv. 2020
- *      Author: ahu
+ * "test_tcp_communication_server.cpp"
  */
 
 
 
 #include <iostream>
-#include <COM_TcpServer.hpp>
+#include <TCP_Server.hpp>
 
 
 
 using namespace std;
-using namespace COM;
+using namespace TCP;
 
 
 
@@ -21,14 +18,11 @@ int main()
 {
 	cout << "Test C++ library for TCP communication : Server" << endl;
 
-	int l_ret;
-
 	CTcpServer l_CTcpServer;
-	l_ret = l_CTcpServer.initTcpServer();
-	if(l_ret != -1)
-	{
-		l_CTcpServer.startTcpServer();
-	}
+	l_CTcpServer.initTcpServer();
+
+
+	while(1);
 
     return 0;
 }
