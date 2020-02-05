@@ -71,14 +71,14 @@ int main()
 						cout << "	updatePathCorrectionMsg : update PATH_CORRECTION message\n";
 						cout << "	updateWorkShopOrderMsg : update WORKSHOP_ORDER message\n";
 						cout << "	updateStopMsg : update STOP message\n";
-						cout << "	updateWorkShopOrderReportMsg : update WORKSHOP_ORDER_REPORT message\n";
+						cout << "	updateWorkShopReportMsg : update WORKSHOP_ORDER_REPORT message\n";
 						cout << "	updateBitReportMsg : update BIT_REPORT message\n";
 						cout << "	updateErrorMsg : update ERROR message\n";
 						cout << "	displayPathMsg : display PATH message\n";
 						cout << "	displayPathCorrectionMsg : display PATH_CORRECTION message\n";
 						cout << "	displayWorkShopOrderMsg : display WORKSHOP_ORDER message\n";
 						cout << "	displayStopMsg : display STOP message\n";
-						cout << "	displayWorkShopReportMsg : display WORKSHOP_ORDER_REPORT message\n";
+						cout << "	displayWorkShopReportMsg : display WORKSHOP_REPORT message\n";
 						cout << "	displayBitReportMsg : display BIT_REPORT message\n";
 						cout << "	displayErrorMsg : display ERROR message\n";
 					}
@@ -105,7 +105,7 @@ int main()
 
 					else if(strcmp(l_serverInputMsg.c_str(), "updatePathCorrectionMsg") == 0)
 					{
-						cout << "> Requested message to server : MSG_ID_PATH_CORRECTION\n";
+						cout << "> Message to be updated : MSG_ID_PATH_CORRECTION\n";
 						if((l_updatePathCorrectionMsgBodyCounter%2) == 0)
 						{
 							l_CTcpServer.updateMsg(MSG_ID_PATH_CORRECTION, &l_pathCorrectionMsgBody1);
@@ -119,7 +119,7 @@ int main()
 
 					else if(strcmp(l_serverInputMsg.c_str(), "updateWorkShopOrderMsg") == 0)
 					{
-						cout << "> Requested message to server : MSG_ID_WORKSHOP_ORDER\n";
+						cout << "> Message to be updated : MSG_ID_WORKSHOP_ORDER\n";
 						if((l_updateWorkShopOrderMsgBodyCounter%2) == 0)
 						{
 							l_CTcpServer.updateMsg(MSG_ID_WORKSHOP_ORDER, &l_workShopOrderMsgBody1);
@@ -133,7 +133,7 @@ int main()
 
 					else if(strcmp(l_serverInputMsg.c_str(), "updateStopMsg") == 0)
 					{
-						cout << "> Requested message to server : MSG_ID_STOP\n";
+						cout << "> Message to be updated : MSG_ID_STOP\n";
 						if((l_updateStopMsgBodyCounter%2) == 0)
 						{
 							l_CTcpServer.updateMsg(MSG_ID_STOP, &l_stopMsgBody1);
@@ -147,7 +147,7 @@ int main()
 
 					else if(strcmp(l_serverInputMsg.c_str(), "updateWorkShopReportMsg") == 0)
 					{
-						cout << "> Requested message to server : MSG_ID_WORKSHOP_REPORT\n";
+						cout << "> Message to be updated : MSG_ID_WORKSHOP_REPORT\n";
 						if((l_updateWorkShopReportMsgBodyCounter%2) == 0)
 						{
 							l_CTcpServer.updateMsg(MSG_ID_WORKSHOP_REPORT, &l_workShopReportMsgBody1);
@@ -161,7 +161,7 @@ int main()
 
 					else if(strcmp(l_serverInputMsg.c_str(), "updateBitReportMsg") == 0)
 					{
-						cout << "> Requested message to server : MSG_ID_BIT_REPORT\n";
+						cout << "> Message to be updated : MSG_ID_BIT_REPORT\n";
 						if((l_updateBitReportMsgBodyCounter%2) == 0)
 						{
 							l_CTcpServer.updateMsg(MSG_ID_BIT_REPORT, &l_bitReportMsgBody1);
@@ -175,7 +175,7 @@ int main()
 
 					else if(strcmp(l_serverInputMsg.c_str(), "updateErrorMsg") == 0)
 					{
-						cout << "> Requested message to server : MSG_ID_ERROR\n";
+						cout << "> Message to be updated : MSG_ID_ERROR\n";
 						if((l_updateErrorMsgBodyCounter%2) == 0)
 						{
 							l_CTcpServer.updateMsg(MSG_ID_ERROR, &l_errorMsgBody1);
