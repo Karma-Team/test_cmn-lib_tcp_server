@@ -5,6 +5,7 @@
 
 
 #include <iostream>
+#include <common.hpp>
 #include <TCP_Server.hpp>
 
 
@@ -25,8 +26,8 @@ int main()
 	SWorkShopReportMsg 		l_workShopReportMsg;
 	SBitReportMsg 			l_bitReportMsg;
 	SErrorMsg 				l_errorMsg;
-	SPathMsgBody 			l_pathMsgBody1 							= {3, {1,2,3,0,0,0,0,0,0,0}};
-	SPathMsgBody 			l_pathMsgBody2 							= {7, {7,6,5,4,3,2,1,0,0,0}};
+	SPathMsgBody 			l_pathMsgBody1 							= {3, {{1,2},{3,0},{0,0},{0,0},{0,0}}};
+	SPathMsgBody 			l_pathMsgBody2 							= {7, {{7,6},{5,4},{3,2},{1,0},{0,0}}};
 	SPathCorrectionMsgBody	l_pathCorrectionMsgBody1				= {2, 3, {11,12,13,0,0,0,0,0,0,0}};
 	SPathCorrectionMsgBody	l_pathCorrectionMsgBody2				= {5, 7, {17,16,15,14,13,12,11,0,0,0}};
 	SWorkShopOrderMsgBody 	l_workShopOrderMsgBody1					= {1};
@@ -197,9 +198,10 @@ int main()
 						cout << "	[body]\n";
 						cout << "		pointsNb : " << l_pathMsg.body.pointsNb << "\n";
 						cout << "		xyPointsArray : [";
-						for(uint32_t i=0 ; i<MAX_PATH_POINTS ; i++)
+						for(uint32_t i = 0 ; i < MAX_PATH_POINTS ; i++)
 						{
-							cout << l_pathMsg.body.xyPointsArray[i] << " ";
+							cout << "(x : " << l_pathMsg.body.points[i].coordX << " | ";
+							cout << "y : " << l_pathMsg.body.points[i].coordY << ") ; ";
 						}
 						cout << "]\n";
 					}
