@@ -60,8 +60,8 @@ int main()
 			do
 			{
 				// Enter server cmd
+					cout << "> Server cmd : ";
 					getline(cin, l_serverInputMsg);
-					cout << "> Server cmd : " << l_serverInputMsg.c_str() << "\n";
 
 				// Treat server cmd
 					if(strcmp(l_serverInputMsg.c_str(), "help") == 0)
