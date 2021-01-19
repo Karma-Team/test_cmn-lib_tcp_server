@@ -19,6 +19,7 @@ int main()
 {
 	cout << "Test C++ library for TCP communication : Server" << endl;
 
+	SPositionMsg 			l_positionMsg 							= {.hd={MSG_ID_POSITION, 		sizeof(SPositionMsg)}, 			.body={0, 0}};
 	SPathMsg 				l_pathMsg;
 	SPathCorrectionMsg		l_pathCorrectionMsg;
 	SWorkShopOrderMsg 		l_workShopOrderMsg;
@@ -188,6 +189,20 @@ int main()
 						l_updateErrorMsgBodyCounter++;
 					}
 
+					else if(strcmp(l_serverInputMsg.c_str(), "displayPositionMsg") == 0)
+					{
+						cout << "> Position message : \n";
+						cout << "	[hd]\n";
+						cout << "		id : " 		<< l_positionMsg.hd.id << "\n";
+						cout << "		size : " 	<< l_positionMsg.hd.size << "\n";
+						cout << "	[body]\n";
+						cout << "		angle : " 	<< l_positionMsg.body.angle << "\n";
+						cout << "		coordinates : [";
+						cout << "(x : " 			<< l_positionMsg.body.coordinates.x << " | ";
+						cout << "y : " 				<< l_positionMsg.body.coordinates.y << ") ; ";
+						cout << "]\n";
+					}
+
 					else if(strcmp(l_serverInputMsg.c_str(), "displayPathMsg") == 0)
 					{
 						l_CTcpServer.getMsg(MSG_ID_PATH, &l_pathMsg);
@@ -200,8 +215,8 @@ int main()
 						cout << "		xyPointsArray : [";
 						for(uint32_t i = 0 ; i < MAX_PATH_POINTS ; i++)
 						{
-							cout << "(x : " << l_pathMsg.body.points[i].coordX << " | ";
-							cout << "y : " << l_pathMsg.body.points[i].coordY << ") ; ";
+							cout << "(x : " << l_pathMsg.body.points[i].x << " | ";
+							cout << "y : " << l_pathMsg.body.points[i].y << ") ; ";
 						}
 						cout << "]\n";
 					}
