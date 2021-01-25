@@ -17,38 +17,30 @@ using namespace TCP;
 
 int main()
 {
-	cout << "Test C++ library for TCP communication : Server" << endl;
+	cout << "Test C++ library for TCP communication : Server (begin)" << endl;
 
-	SPositionMsg 			l_positionMsg 							= {.hd={MSG_ID_POSITION, 		sizeof(SPositionMsg)}, 			.body={0, 0}};
-	SPathMsg 				l_pathMsg;
-	SPathCorrectionMsg		l_pathCorrectionMsg;
-	SWorkShopOrderMsg 		l_workShopOrderMsg;
-	SStopMsg 				l_stopMsg;
-	SWorkShopReportMsg 		l_workShopReportMsg;
-	SBitReportMsg 			l_bitReportMsg;
-	SErrorMsg 				l_errorMsg;
-	SPathMsgBody 			l_pathMsgBody1 							= {3, {{1,2},{3,0},{0,0},{0,0},{0,0}}};
-	SPathMsgBody 			l_pathMsgBody2 							= {7, {{7,6},{5,4},{3,2},{1,0},{0,0}}};
-	SPathCorrectionMsgBody	l_pathCorrectionMsgBody1				= {2, 3, {11,12,13,0,0,0,0,0,0,0}};
-	SPathCorrectionMsgBody	l_pathCorrectionMsgBody2				= {5, 7, {17,16,15,14,13,12,11,0,0,0}};
-	SWorkShopOrderMsgBody 	l_workShopOrderMsgBody1					= {1};
-	SWorkShopOrderMsgBody 	l_workShopOrderMsgBody2					= {2};
-	SStopMsgBody 			l_stopMsgBody1							= {11};
-	SStopMsgBody 			l_stopMsgBody2							= {12};
-	SWorkShopReportMsgBody 	l_workShopReportMsgBody1				= {101};
-	SWorkShopReportMsgBody 	l_workShopReportMsgBody2				= {102};
-	SBitReportMsgBody 		l_bitReportMsgBody1						= {1001};
-	SBitReportMsgBody 		l_bitReportMsgBody2						= {1002};
-	SErrorMsgBody 			l_errorMsgBody1							= {10001};
-	SErrorMsgBody 			l_errorMsgBody2							= {10002};
-	string 					l_serverInputMsg;
-	uint32_t 				l_updatePathMsgBodyCounter				= 0;
-	uint32_t 				l_updatePathCorrectionMsgBodyCounter	= 0;
-	uint32_t 				l_updateWorkShopOrderMsgBodyCounter		= 0;
-	uint32_t 				l_updateStopMsgBodyCounter				= 0;
-	uint32_t 				l_updateWorkShopReportMsgBodyCounter	= 0;
-	uint32_t 				l_updateBitReportMsgBodyCounter			= 0;
-	uint32_t 				l_updateErrorMsgBodyCounter				= 0;
+	SMsgInfoKeepAlive 		l_msgInfoKeepAlive						= {.hd={ID_MSG_INFO_KEEP_ALIVE,	sizeof(SMsgInfoKeepAlive)}, 	.body={false}};
+	SMsgInfoPosition 		l_msgInfoPosition 						= {.hd={ID_MSG_INFO_POSITION, 	sizeof(SMsgInfoPosition)}, 		.body={0, 0}};
+	SMsgOrderBit			l_msgOrderBit							= {.hd={ID_MSG_ORDER_BIT, 		sizeof(SMsgOrderBit)}, 			.body={0}};
+	SMsgOrderPath 			l_msgOrderPath 							= {.hd={ID_MSG_ORDER_PATH,		sizeof(SMsgOrderPath)}, 		.body={0, {0,0,0,0,0,0,0,0,0,0}}};
+	SMsgOrderPathCorr		l_msgOrderPathCorr						= {.hd={ID_MSG_ORDER_PATH_CORR, sizeof(SMsgOrderPathCorr)}, 	.body={0, 0, {0,0,0,0,0,0,0,0,0,0}}};
+	SMsgOrderWorkShop 		l_msgOrderWorkShop						= {.hd={ID_MSG_ORDER_WORKSHOP, 	sizeof(SMsgOrderWorkShop)}, 	.body={0}};
+	SMsgOrderStop 			l_msgOrderStop							= {.hd={ID_MSG_ORDER_STOP,		sizeof(SMsgOrderStop)}, 		.body={0}};
+	SMsgReportBit 			l_msgReportBit							= {.hd={ID_MSG_REPORT_BIT, 		sizeof(SMsgReportBit)}, 		.body={0}};
+	SMsgReportWorkShop 		l_msgReportWorkShop						= {.hd={ID_MSG_REPORT_WORKSHOP, sizeof(SMsgReportWorkShop)},	.body={0}};
+
+	SMsgOrderPathBody 		l_msgOrderPathBody1 					= {3, {{1,2},{3,0},{0,0},{0,0},{0,0}}};
+	SMsgOrderPathBody 		l_msgOrderPathBody2 					= {7, {{7,6},{5,4},{3,2},{1,0},{0,0}}};
+	SMsgOrderPathCorrBody	l_msgOrderPathCorrBody1					= {2, 3, {11,12,13,0,0,0,0,0,0,0}};
+	SMsgOrderPathCorrBody	l_msgOrderPathCorrBody2					= {5, 7, {17,16,15,14,13,12,11,0,0,0}};
+	SMsgOrderWorkShopBody 	l_msgOrderWorkShopBody1					= {1};
+	SMsgOrderWorkShopBody 	l_msgOrderWorkShopBody2					= {2};
+
+	uint32_t 				l_updateCounterMsgBodyOrderPath			= 0;
+	uint32_t 				l_updateCounterMsgBodyOrderPathCorr		= 0;
+	uint32_t 				l_updateCounterMsgBodyOrderWorkShop		= 0;
+
+	string 					l_inputCmd;
 	int 					l_quitRequested							= 0;
 	int 					l_serverSocket;
 
@@ -62,242 +54,185 @@ int main()
 			{
 				// Enter server cmd
 					cout << "> Server cmd : ";
-					getline(cin, l_serverInputMsg);
+					getline(cin, l_inputCmd);
 
 				// Treat server cmd
-					if(strcmp(l_serverInputMsg.c_str(), "help") == 0)
-					{
-						cout << "	help : display help message\n";
-						cout << "	quit : close TCP server\n";
-						cout << "	updatePathMsg : update PATH message\n";
-						cout << "	updatePathCorrectionMsg : update PATH_CORRECTION message\n";
-						cout << "	updateWorkShopOrderMsg : update WORKSHOP_ORDER message\n";
-						cout << "	updateStopMsg : update STOP message\n";
-						cout << "	updateWorkShopReportMsg : update WORKSHOP_ORDER_REPORT message\n";
-						cout << "	updateBitReportMsg : update BIT_REPORT message\n";
-						cout << "	updateErrorMsg : update ERROR message\n";
-						cout << "	displayPathMsg : display PATH message\n";
-						cout << "	displayPathCorrectionMsg : display PATH_CORRECTION message\n";
-						cout << "	displayWorkShopOrderMsg : display WORKSHOP_ORDER message\n";
-						cout << "	displayStopMsg : display STOP message\n";
-						cout << "	displayWorkShopReportMsg : display WORKSHOP_REPORT message\n";
-						cout << "	displayBitReportMsg : display BIT_REPORT message\n";
-						cout << "	displayErrorMsg : display ERROR message\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "quit") == 0)
-					{
-						cout << "> Quit requested\n";
-						l_quitRequested = 1;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updatePathMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_PATH\n";
-						if((l_updatePathMsgBodyCounter%2) == 0)
+					// Display the help message
+						if(strcmp(l_inputCmd.c_str(), "help") == 0)
 						{
-							l_CTcpServer.updateMsg(MSG_ID_PATH, &l_pathMsgBody1);
+							cout << "	help : display this help message \n";
+							cout << "	quit : close TCP server \n";
+
+							// Display a message that can be sent to the client
+							cout << "	getMsgInfoKeepAlive \n";
+							cout << "	getMsgInfoPosition \n";
+							cout << "	getMsgOrderBit \n";
+							cout << "	getMsgOrderPath \n";
+							cout << "	getMsgOrderPathCorr \n";
+							cout << "	getMsgOrderWorkShop \n";
+							cout << "	getMsgOrderStop \n";
+
+							// Display a message that can be received from the client
+							cout << "	getMsgReportBit \n";
+							cout << "	getMsgReportWorkShop \n";
+
+							// Simulate an update of a message that can be sent to the client
+							//cout << "	updateMsgInfoKeepAlive\n";	// Message updated periodically
+							//cout << "	updateMsgInfoPosition\n";	// Message updated periodically
+							//cout << "	updateMsgOrderBit\n"; 		// Message with no content to be updated
+							cout << "	updateMsgOrderPath \n";
+							cout << "	updateMsgOrderPathCorr \n";
+							cout << "	updateMsgOrderWorkShop \n";
+							//cout << "	updateMsgOrderStop \n";		// Message with no content to be updated
+
+							// Send a message to the client
+							//cout << "	sendMsgInfoKeepAlive\n";	// Message sent periodically
+							//cout << "	sendMsgInfoPosition\n";		// Message sent periodically
+							cout << "	sendMsgOrderBit\n";
+							cout << "	sendMsgOrderPath \n";
+							cout << "	sendMsgOrderPathCorr \n";
+							cout << "	sendMsgOrderWorkShop \n";
+							cout << "	sendMsgOrderStop \n";
 						}
+
+					// Close the server
+						else if(strcmp(l_inputCmd.c_str(), "quit") == 0)
+						{
+							l_CTcpServer.closeTcpServer();
+							l_quitRequested = 1;
+						}
+
+					// Display a message that can be sent to the client
+						else if(strcmp(l_inputCmd.c_str(), "getMsgInfoKeepAlive") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_INFO_KEEP_ALIVE, &l_msgInfoKeepAlive);
+							displayMsgInfoKeepAlive(&l_msgInfoKeepAlive);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgInfoPosition") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_INFO_POSITION, &l_msgInfoPosition);
+							displayMsgInfoPosition(&l_msgInfoPosition);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgOrderBit") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_ORDER_BIT, &l_msgOrderBit);
+							displayMsgOrderBit(&l_msgOrderBit);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgOrderPath") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_ORDER_PATH, &l_msgOrderPath);
+							displayMsgOrderPath(&l_msgOrderPath);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgOrderPathCorr") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_ORDER_PATH_CORR, &l_msgOrderPathCorr);
+							displayMsgOrderPathCorr(&l_msgOrderPathCorr);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgOrderWorkShop") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_ORDER_WORKSHOP, &l_msgOrderWorkShop);
+							displayMsgOrderWorkShop(&l_msgOrderWorkShop);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgOrderStop") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_ORDER_STOP, &l_msgOrderStop);
+							displayMsgOrderStop(&l_msgOrderStop);
+						}
+
+					// Display a message that can be received from the client
+						else if(strcmp(l_inputCmd.c_str(), "getMsgReportBit") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_REPORT_BIT, &l_msgReportBit);
+							displayMsgReportBit(&l_msgReportBit);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "getMsgReportWorkShop") == 0)
+						{
+							l_CTcpServer.getMsg(ID_MSG_REPORT_WORKSHOP, &l_msgReportWorkShop);
+							displayMsgReportWorkShop(&l_msgReportWorkShop);
+						}
+
+					// Simulate an update of a message that can be sent to the client
+						else if(strcmp(l_inputCmd.c_str(), "updateMsgOrderPath") == 0)
+						{
+							if((l_updateCounterMsgBodyOrderPath%2) == 0)
+							{
+								l_CTcpServer.updateMsg(ID_MSG_ORDER_PATH, &l_msgOrderPathBody1);
+								l_updateCounterMsgBodyOrderPath = 0;
+							}
+							else
+							{
+								l_CTcpServer.updateMsg(ID_MSG_ORDER_PATH, &l_msgOrderPathBody2);
+							}
+							l_updateCounterMsgBodyOrderPath++;
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "updateMsgOrderPathCorr") == 0)
+						{
+							if((l_updateCounterMsgBodyOrderPathCorr%2) == 0)
+							{
+								l_CTcpServer.updateMsg(ID_MSG_ORDER_PATH_CORR, &l_msgOrderPathCorrBody1);
+								l_updateCounterMsgBodyOrderPathCorr = 0;
+							}
+							else
+							{
+								l_CTcpServer.updateMsg(ID_MSG_ORDER_PATH_CORR, &l_msgOrderPathCorrBody2);
+							}
+							l_updateCounterMsgBodyOrderPathCorr++;
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "updateMsgOrderWorkShop") == 0)
+						{
+							if((l_updateCounterMsgBodyOrderWorkShop%2) == 0)
+							{
+								l_CTcpServer.updateMsg(ID_MSG_ORDER_WORKSHOP, &l_msgOrderWorkShopBody1);
+								l_updateCounterMsgBodyOrderWorkShop = 0;
+							}
+							else
+							{
+								l_CTcpServer.updateMsg(ID_MSG_ORDER_WORKSHOP, &l_msgOrderWorkShopBody2);
+							}
+							l_updateCounterMsgBodyOrderWorkShop++;
+						}
+
+					// Send a message to the client
+					// AHU : 2nd argument par défaut à "0" : clientId
+						else if(strcmp(l_inputCmd.c_str(), "sendMsgOrderBit") == 0)
+						{
+							l_CTcpServer.sendMsgToClient(ID_MSG_ORDER_BIT, 0);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "sendMsgOrderPath") == 0)
+						{
+							l_CTcpServer.sendMsgToClient(ID_MSG_ORDER_PATH, 0);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "sendMsgOrderPathCorr") == 0)
+						{
+							l_CTcpServer.sendMsgToClient(ID_MSG_ORDER_PATH_CORR, 0);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "sendMsgOrderWorkShop") == 0)
+						{
+							l_CTcpServer.sendMsgToClient(ID_MSG_ORDER_WORKSHOP, 0);
+						}
+
+						else if(strcmp(l_inputCmd.c_str(), "sendMsgOrderStop") == 0)
+						{
+							l_CTcpServer.sendMsgToClient(ID_MSG_ORDER_STOP, 0);
+						}
+
+					// Default
 						else
 						{
-							l_CTcpServer.updateMsg(MSG_ID_PATH, &l_pathMsgBody2);
+							cout << "> Unknown server cmd : enter 'help' to display available cmd\n";
 						}
-						l_updatePathMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updatePathCorrectionMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_PATH_CORRECTION\n";
-						if((l_updatePathCorrectionMsgBodyCounter%2) == 0)
-						{
-							l_CTcpServer.updateMsg(MSG_ID_PATH_CORRECTION, &l_pathCorrectionMsgBody1);
-						}
-						else
-						{
-							l_CTcpServer.updateMsg(MSG_ID_PATH_CORRECTION, &l_pathCorrectionMsgBody2);
-						}
-						l_updatePathCorrectionMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updateWorkShopOrderMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_WORKSHOP_ORDER\n";
-						if((l_updateWorkShopOrderMsgBodyCounter%2) == 0)
-						{
-							l_CTcpServer.updateMsg(MSG_ID_WORKSHOP_ORDER, &l_workShopOrderMsgBody1);
-						}
-						else
-						{
-							l_CTcpServer.updateMsg(MSG_ID_WORKSHOP_ORDER, &l_workShopOrderMsgBody2);
-						}
-						l_updateWorkShopOrderMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updateStopMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_STOP\n";
-						if((l_updateStopMsgBodyCounter%2) == 0)
-						{
-							l_CTcpServer.updateMsg(MSG_ID_STOP, &l_stopMsgBody1);
-						}
-						else
-						{
-							l_CTcpServer.updateMsg(MSG_ID_STOP, &l_stopMsgBody2);
-						}
-						l_updateStopMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updateWorkShopReportMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_WORKSHOP_REPORT\n";
-						if((l_updateWorkShopReportMsgBodyCounter%2) == 0)
-						{
-							l_CTcpServer.updateMsg(MSG_ID_WORKSHOP_REPORT, &l_workShopReportMsgBody1);
-						}
-						else
-						{
-							l_CTcpServer.updateMsg(MSG_ID_WORKSHOP_REPORT, &l_workShopReportMsgBody2);
-						}
-						l_updateWorkShopReportMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updateBitReportMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_BIT_REPORT\n";
-						if((l_updateBitReportMsgBodyCounter%2) == 0)
-						{
-							l_CTcpServer.updateMsg(MSG_ID_BIT_REPORT, &l_bitReportMsgBody1);
-						}
-						else
-						{
-							l_CTcpServer.updateMsg(MSG_ID_BIT_REPORT, &l_bitReportMsgBody2);
-						}
-						l_updateBitReportMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "updateErrorMsg") == 0)
-					{
-						cout << "> Message to be updated : MSG_ID_ERROR\n";
-						if((l_updateErrorMsgBodyCounter%2) == 0)
-						{
-							l_CTcpServer.updateMsg(MSG_ID_ERROR, &l_errorMsgBody1);
-						}
-						else
-						{
-							l_CTcpServer.updateMsg(MSG_ID_ERROR, &l_errorMsgBody2);
-						}
-						l_updateErrorMsgBodyCounter++;
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayPositionMsg") == 0)
-					{
-						cout << "> Position message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " 		<< l_positionMsg.hd.id << "\n";
-						cout << "		size : " 	<< l_positionMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		angle : " 	<< l_positionMsg.body.angle << "\n";
-						cout << "		coordinates : [";
-						cout << "(x : " 			<< l_positionMsg.body.coordinates.x << " | ";
-						cout << "y : " 				<< l_positionMsg.body.coordinates.y << ") ; ";
-						cout << "]\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayPathMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_PATH, &l_pathMsg);
-						cout << "> Path message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_pathMsg.hd.id << "\n";
-						cout << "		size : " << l_pathMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		pointsNb : " << l_pathMsg.body.pointsNb << "\n";
-						cout << "		xyPointsArray : [";
-						for(uint32_t i = 0 ; i < MAX_PATH_POINTS ; i++)
-						{
-							cout << "(x : " << l_pathMsg.body.points[i].x << " | ";
-							cout << "y : " << l_pathMsg.body.points[i].y << ") ; ";
-						}
-						cout << "]\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayPathCorrectionMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_PATH_CORRECTION, &l_pathCorrectionMsg);
-						cout << "> Path correction message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_pathCorrectionMsg.hd.id << "\n";
-						cout << "		size : " << l_pathCorrectionMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		lastIdValid : " << l_pathCorrectionMsg.body.lastIdValid << "\n";
-						cout << "		pointsNb : " << l_pathCorrectionMsg.body.pointsNb << "\n";
-						cout << "		xyPointsArray : [";
-						for(uint32_t i=0 ; i<MAX_PATH_POINTS ; i++)
-						{
-							cout << l_pathCorrectionMsg.body.xyCorrectionPointsArray[i] << " ";
-						}
-						cout << "]\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayWorkShopOrderMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_WORKSHOP_ORDER, &l_workShopOrderMsg);
-						cout << "> Workshop order message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_workShopOrderMsg.hd.id << "\n";
-						cout << "		size : " << l_workShopOrderMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		tmp : " << l_workShopOrderMsg.body.tmp << "\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayStopMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_STOP, &l_stopMsg);
-						cout << "> Stop message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_stopMsg.hd.id << "\n";
-						cout << "		size : " << l_stopMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		tmp : " << l_stopMsg.body.tmp << "\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayWorkShopReportMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_WORKSHOP_REPORT, &l_workShopReportMsg);
-						cout << "> Workshop report message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_workShopReportMsg.hd.id << "\n";
-						cout << "		size : " << l_workShopReportMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		tmp : " << l_workShopReportMsg.body.tmp << "\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayBitReportMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_BIT_REPORT, &l_bitReportMsg);
-						cout << "> Bit report message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_bitReportMsg.hd.id << "\n";
-						cout << "		size : " << l_bitReportMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		tmp : " << l_bitReportMsg.body.tmp << "\n";
-					}
-
-					else if(strcmp(l_serverInputMsg.c_str(), "displayErrorMsg") == 0)
-					{
-						l_CTcpServer.getMsg(MSG_ID_ERROR, &l_errorMsg);
-						cout << "> Error message : \n";
-						cout << "	[hd]\n";
-						cout << "		id : " << l_errorMsg.hd.id << "\n";
-						cout << "		size : " << l_errorMsg.hd.size << "\n";
-						cout << "	[body]\n";
-						cout << "		tmp : " << l_errorMsg.body.tmp << "\n";
-					}
-
-					else
-					{
-						cout << "> Unknown server cmd : enter 'help' to display available cmd\n";
-					}
 			} while(l_quitRequested == 0);
 	}
 	else
@@ -306,6 +241,7 @@ int main()
 		return -1;
 	}
 
+	cout << "Test C++ library for TCP communication : Server (end)" << endl;
     return 0;
 }
 
